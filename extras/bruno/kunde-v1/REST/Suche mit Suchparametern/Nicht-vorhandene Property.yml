@@ -1,0 +1,30 @@
+info:
+  name: Nicht-vorhandene Property
+  type: http
+  seq: 9
+
+http:
+  method: GET
+  url: "{{apiUrl}}?php=true"
+  headers:
+    - name: X-Version
+      value: 1.0.0
+  params:
+    - name: php
+      value: "true"
+      type: query
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "404"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+

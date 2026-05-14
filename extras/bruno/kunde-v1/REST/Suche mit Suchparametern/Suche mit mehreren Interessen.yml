@@ -1,0 +1,54 @@
+info:
+  name: Suche mit mehreren Interessen
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: "{{apiUrl}}?interesse=L&interesse=S"
+  headers:
+    - name: Accept
+      value: application/json
+    - name: X-Version
+      value: 1.0.0
+  params:
+    - name: interesse
+      value: L
+      type: query
+    - name: interesse
+      value: S
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('Body: Interessen und ID', () => {
+          res.getBody()
+            .forEach(kunde => {
+              const { interessen, id } = kunde;
+              expect(interessen).to.be.an('array').that.includes('L');
+              expect(interessen).to.be.an('array').that.includes('S');
+              expect(id).to.be.a('string').that.matches(/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/u);
+            });
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.headers['content-type']
+      operator: eq
+      value: application/json
+    - expression: res.body
+      operator: isArray
+    - expression: res.body
+      operator: isNotEmpty
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+

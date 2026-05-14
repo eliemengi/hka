@@ -1,0 +1,59 @@
+info:
+  name: Neuer Kunde mit bereits existierender Email
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{apiUrl}}"
+  headers:
+    - name: X-Version
+      value: 1.0.0
+  body:
+    type: json
+    data: |-
+      {
+          "nachname": "Test",
+          "email": "admin@acme.com",
+          "kategorie": 1,
+          "hasNewsletter": true,
+          "geburtsdatum": "2024-01-31",
+          "homepage": "https://www.test.de",
+          "geschlecht": "W",
+          "familienstand": "L",
+          "adresse": {
+              "plz": "12345",
+              "ort": "Testort"
+          },
+          "rechnungen": [{
+              "betrag": 0,
+              "waehrung": "EUR"
+          }],
+          "interessen": [
+              "R",
+              "L"
+          ]
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "422"
+    - expression: res.headers['content-type']
+      operator: eq
+      value: application/problem+json
+    - expression: res.body.detail
+      operator: isString
+    - expression: res.body.detail
+      operator: contains
+      value: Emailadresse
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+

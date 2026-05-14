@@ -1,0 +1,10 @@
+info:
+  name: Neuanlegen
+  type: folder
+  seq: 3
+
+docs:
+  content: Über die REST-Schnittstelle neue Kunden anlegen
+  type: text/markdown
+
+

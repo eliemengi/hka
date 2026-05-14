@@ -1,0 +1,38 @@
+info:
+  name: Nicht-vorhandener Teilstring des Nachnamens
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{apiUrl}}?nachname=Zeta"
+  headers:
+    - name: Accept
+      value: application/json
+    - name: X-Version
+      value: 1.0.0
+  params:
+    - name: nachname
+      value: Zeta
+      type: query
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        test('Statuscode 404', () => {
+            expect(res.getStatus()).to.equal(404);
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "404"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+

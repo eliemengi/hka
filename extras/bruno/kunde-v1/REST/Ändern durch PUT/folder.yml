@@ -1,0 +1,13 @@
+info:
+  name: Ändern durch PUT
+  type: folder
+  seq: 4
+
+request:
+  auth: inherit
+
+docs:
+  content: Über die REST-Schnittstelle vorhandene Kunden ändern
+  type: text/markdown
+
+

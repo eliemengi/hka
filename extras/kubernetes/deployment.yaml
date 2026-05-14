@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hka
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hka
+  template:
+    metadata:
+      labels:
+        app: hka
+    spec:
+      containers:
+        - name: hka
+          image: hka:1.0-SNAPSHOT
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+

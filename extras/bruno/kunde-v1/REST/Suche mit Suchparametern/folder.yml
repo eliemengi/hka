@@ -1,0 +1,13 @@
+info:
+  name: Suche mit Suchparametern
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit
+
+docs:
+  content: Über die REST-Schnittstelle nach Kunden mit Suchparametern suchen.
+  type: text/markdown
+
+

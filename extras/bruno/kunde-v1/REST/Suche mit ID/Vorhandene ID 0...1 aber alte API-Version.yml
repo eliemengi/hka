@@ -1,0 +1,38 @@
+info:
+  name: Vorhandene ID 0...1 aber alte API-Version
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{apiUrl}}/:id"
+  headers:
+    - name: Accept
+      value: application/json
+    - name: X-Version
+      value: 0.9.0
+  params:
+    - name: id
+      value: 00000001-0000-7000-9000-000000000000
+      type: path
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "400"
+    - expression: res.headers['content-type']
+      operator: eq
+      value: application/problem+json
+    - expression: res.body.detail
+      operator: contains
+      value: Invalid API version
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+

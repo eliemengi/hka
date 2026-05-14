@@ -1,0 +1,15 @@
+info:
+  name: REST
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit
+  variables:
+    - name: apiUrl
+      value: "{{baseUrl}}/api"
+    - name: apiUrl
+      value: "{{baseUrl}}/kunden"
+      disabled: true
+
+

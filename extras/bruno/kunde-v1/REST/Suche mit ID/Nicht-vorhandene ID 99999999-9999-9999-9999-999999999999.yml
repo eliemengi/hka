@@ -1,0 +1,30 @@
+info:
+  name: Nicht-vorhandene ID 99999999-9999-9999-9999-999999999999
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{apiUrl}}/:id"
+  headers:
+    - name: X-Version
+      value: 1.0.0
+  params:
+    - name: id
+      value: 99999999-9999-9999-9999-999999999999
+      type: path
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "404"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+

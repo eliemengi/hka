@@ -1,0 +1,32 @@
+info:
+  name: Nicht-vorhandene Emailadresse
+  type: http
+  seq: 6
+
+http:
+  method: GET
+  url: "{{apiUrl}}?email=Nicht%40Vorhanden"
+  headers:
+    - name: Accept
+      value: application/json
+    - name: X-Version
+      value: 1.0.0
+  params:
+    - name: email
+      value: Nicht%40Vorhanden
+      type: query
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "404"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+

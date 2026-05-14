@@ -1,0 +1,36 @@
+autoscaling:
+  maxReplicas: 1
+replicaCount: 1
+rollingUpdate:
+  maxUnavailable: 0
+progressDeadlineSeconds: 180
+image:
+  pullPolicy: Never
+profile: dev
+resourcesRequests:
+  memory: 768Mi
+resourcesLimits:
+  memory: 1024Mi
+livenessProbe:
+  initialDelay: 90
+  timeout: 30
+  period: 180
+  failureThreshold: 3
+  port: 8443
+  scheme: HTTPS
+readinessProbe:
+  initialDelay: 90
+  timeout: 30
+  period: 180
+  failureThreshold: 3
+  port: 8443       # <--- HIER HINZUFÜGEN
+  scheme: HTTPS
+startupProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: 8443
+    scheme: HTTPS
+  initialDelaySeconds: 10
+  periodSeconds: 10
+
+  failureThreshold: 30

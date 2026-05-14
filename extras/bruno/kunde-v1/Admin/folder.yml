@@ -1,0 +1,14 @@
+info:
+  name: Admin
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit
+  variables:
+    - name: actuatorUrl
+      value: "{{baseUrl}}/actuator"
+    - name: healthUrl
+      value: "{{actuatorUrl}}/health"
+
+

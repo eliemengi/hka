@@ -1,0 +1,50 @@
+info:
+  name: hka 30 ändern
+  type: http
+  seq: 1
+
+http:
+  method: PUT
+  url: "{{apiUrl}}/:id"
+  headers:
+    - name: If-Match
+      value: '"0"'
+    - name: X-Version
+      value: 1.0.0
+  params:
+    - name: id
+      value: 00000030-0000-7000-9000-000000000000
+      type: path
+  body:
+    type: json
+    data: |
+      {
+          "nachname": "Testput",
+          "email": "Theo@Test.de.put",
+          "kategorie" : 1,
+          "hasNewsletter": true,
+          "geburtsdatum": "2024-01-31",
+          "homepage": "https://www.test.de",
+          "geschlecht": "W",
+          "familienstand": "L",
+          "username": "alpha3"
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "204"
+    - expression: res.body
+      operator: isString
+    - expression: res.body
+      operator: isEmpty
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+

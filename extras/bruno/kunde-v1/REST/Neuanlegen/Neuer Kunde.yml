@@ -1,0 +1,54 @@
+info:
+  name: Neuer Kunde
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{apiUrl}}"
+  headers:
+    - name: X-Version
+      value: 1.0.0
+  body:
+    type: json
+    data: |-
+      {
+          "nachname": "Testpost",
+          "email": "Test.Post@test.de",
+          "kategorie": 1,
+          "hasNewsletter": true,
+          "geburtsdatum": "2024-01-31",
+          "homepage": "https://www.test.de",
+          "geschlecht": "W",
+          "familienstand": "L",
+          "adresse": {
+              "plz": "12345",
+              "ort": "Testortpost"
+          },
+          "interessen": [
+              "R",
+              "L"
+          ]
+      }
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+    - expression: res.headers.location
+      operator: matches
+      value: /api/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$
+    - expression: res.body
+      operator: isString
+    - expression: res.body
+      operator: isEmpty
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+

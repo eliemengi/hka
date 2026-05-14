@@ -1,0 +1,61 @@
+info:
+  name: Neuer Kunde ohne Adresse
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{apiUrl}}"
+  headers:
+    - name: X-Version
+      value: 1.0.0
+  body:
+    type: json
+    data: |-
+      {
+          "nachname": "?!$",
+          "email": "email",
+          "kategorie": 11,
+          "hasNewsletter": true,
+          "geburtsdatum": "3000-01-31",
+          "homepage": "https://www.test.de",
+          "geschlecht": "W",
+          "familienstand": "L",
+          "rechnungen": [{
+              "betrag": 0,
+              "waehrung": "EUR"
+          }],
+          "interessen": [
+              "R",
+              "L",
+              "L"
+          ]
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('Fehlermeldungen im Response Body', () => {
+          const { detail } = res.getBody();
+          const props = ['nachname', 'email', 'kategorie', 'geburtsdatum', 'interessen', 'adresse'];
+          props.forEach(prop => expect(detail).to.include(prop));
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "422"
+    - expression: res.headers['content-type']
+      operator: eq
+      value: application/problem+json
+    - expression: res.body.detail
+      operator: isString
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+

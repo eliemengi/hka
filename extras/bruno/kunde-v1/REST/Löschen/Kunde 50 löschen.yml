@@ -1,0 +1,39 @@
+info:
+  name: hka 50 löschen
+  type: http
+  seq: 1
+
+http:
+  method: DELETE
+  url: "{{apiUrl}}/:id"
+  headers:
+    - name: If-Match
+      value: '"0"'
+    - name: X-Version
+      value: 1.0.0
+  params:
+    - name: id
+      value: 00000050-0000-7000-9000-000000000000
+      type: path
+  body:
+    type: json
+    data: ""
+  auth: inherit
+
+runtime:
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "204"
+    - expression: res.body
+      operator: isString
+    - expression: res.body
+      operator: isEmpty
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+
