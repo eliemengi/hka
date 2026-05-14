@@ -37,3 +37,15 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Local IntelliJ project files ###
+.idea/
+
+### Terraform local files ###
+extras/terraform/.terraform/
+extras/terraform/terraform.tfstate
+extras/terraform/terraform.tfstate.backup
+
+### Secrets / certificates ###
+src/main/resources/private-key.pem
+src/main/resources/certificate.crt
