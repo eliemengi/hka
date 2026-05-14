@@ -2,8 +2,6 @@
 
 A Spring Boot REST microservice for managing universities (Hochschulen), built as part of the **Wirtschaftsinformatik** course at **Hochschule Karlsruhe (HKA)** under Prof. Dr. Jürgen Zimmermann.
 
-> Group 33 — First submission deliverable covering Milestones 5-7
-
 ---
 
 ## Overview
@@ -47,7 +45,7 @@ The service exposes endpoints to **create**, **read**, **search**, and **update*
 hka/
 ├── src/
 │   ├── main/
-│   │   ├── java/com/elie/hka/
+│   │   ├── java/com/example/hka/
 │   │   │   ├── HkaApplication.java
 │   │   │   ├── config/
 │   │   │   ├── controller/
@@ -70,7 +68,7 @@ hka/
 │   │       ├── certificate.crt
 │   │       └── private-key.pem
 │   └── test/
-│       └── java/com/elie/hka/controller/
+│       └── java/com/example/hka/controller/
 │           └── HochschuleControllerTest.java
 ├── extras/
 │   ├── helm/hka/              # Helm chart
@@ -135,21 +133,13 @@ All input is validated using Jakarta Bean Validation:
 
 Invalid requests return `400 Bad Request` handled by `GlobalExceptionHandler`.
 
-### Fixed Test UUID
-
-For reproducibility, the seed data uses a fixed UUID:
-
-```
-6e9e2ec1-7a51-4e8f-ac70-7a855815438d
-```
-
 ---
 
 ## Getting Started
 
 ### Prerequisites
 
-- **Java 26** (Azul Zulu installed at `C:\Zimmermann\jdk`)
+- **Java 26** (e.g. Azul Zulu)
 - **Maven 3.9+**
 - **Docker Desktop** with Kubernetes enabled
 - **Terraform 1.15.0**
@@ -160,7 +150,7 @@ For reproducibility, the seed data uses a fixed UUID:
 
 **Run the server:**
 ```powershell
-cd C:\Users\schwa\IdeaProjects\Hochschule\hka
+cd path\to\hka
 mvn spring-boot:run
 ```
 
@@ -172,7 +162,7 @@ The server starts on `https://localhost:8443`.
 curl --insecure https://localhost:8443/hochschulen
 
 # Get by ID
-curl --insecure https://localhost:8443/hochschulen/6e9e2ec1-7a51-4e8f-ac70-7a855815438d
+curl --insecure https://localhost:8443/hochschulen/{uuid}
 
 # Search by name
 curl --insecure "https://localhost:8443/hochschulen/search?name=Karlsruhe"
@@ -229,7 +219,7 @@ This produces reports under `target/site/`:
 - **`spotbugs.html`** — SpotBugs findings
 - **`dependency-check-report.html`** — OWASP vulnerability scan
 
-> **Note:** First run downloads ~130k CVE records from the NVD database. Subsequent runs use the cache at `C:/Zimmermann/dependency-check-data`.
+> **Note:** First run downloads ~130k CVE records from the NVD database. Subsequent runs use a local cache.
 
 ---
 
@@ -241,10 +231,7 @@ This produces reports under `target/site/`:
 mvn spring-boot:build-image -D'maven.test.skip=true'
 ```
 
-This produces the image:
-```
-juergenzimmermann/hka:2026.4.1-buildpacks-bellsoft
-```
+This produces an image tagged with the project version and Paketo's Bellsoft Liberica runtime.
 
 The image uses **Bellsoft Liberica JRE 26** on **Ubuntu Noble** with Native Memory Tracking enabled and a thread count optimized for microservices.
 
@@ -273,13 +260,15 @@ description: Medium priority
 
 **2. Create log directory on host:**
 ```powershell
-New-Item -ItemType Directory -Force -Path "C:\Zimmermann\volumes\hka-v1"
+New-Item -ItemType Directory -Force -Path "C:\path\to\volumes\hka-v1"
 ```
+
+> Adjust the volume path in `extras/helm/hka/templates/deployment.yaml` to match your local directory.
 
 ### Deploy with Terraform
 
 ```powershell
-cd C:\Users\schwa\IdeaProjects\Hochschule\hka\extras\terraform
+cd extras\terraform
 terraform init -upgrade
 terraform apply -auto-approve
 ```
@@ -287,10 +276,10 @@ terraform apply -auto-approve
 ### Deploy with Helm (alternative)
 
 ```powershell
-helm install hka C:\Users\schwa\IdeaProjects\Hochschule\hka\extras\helm\hka `
+helm install hka extras\helm\hka `
     --namespace acme `
     --create-namespace `
-    -f C:\Users\schwa\IdeaProjects\Hochschule\hka\extras\terraform\dev\hka.yaml
+    -f extras\terraform\dev\hka.yaml
 ```
 
 ### Verify Deployment
@@ -306,7 +295,7 @@ Wait for status `1/1 Running`.
 To access the service from outside the cluster:
 
 ```powershell
-cd C:\Users\schwa\IdeaProjects\Hochschule\hka\extras
+cd extras
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\port-forward.ps1 8443 hka
 ```
@@ -328,7 +317,7 @@ helm uninstall hka --namespace acme
 The Helm chart configures:
 - **Resource limits:** 600m CPU, 1Gi memory
 - **Security context:** Non-root user (UID 1002), dropped capabilities, RuntimeDefault seccomp profile
-- **Health probes:** Startup probe on `/actuator/health/liveness` with 30 retry attempts (5 min grace period)
+- **Health probes:** Startup probe on `/actuator/health/liveness` with extended retry threshold to accommodate Spring Boot startup time
 - **Volume mounts:** TLS certificate, private key, and log directory from host
 
 ### Terraform (`extras/terraform/main.tf`)
@@ -343,7 +332,7 @@ Configured for Docker Desktop's Kubernetes context with a 5-minute timeout (conf
 
 ## API Testing with Bruno
 
-The project includes a Bruno collection at `extras/bruno/hka/` with sample requests.
+The project includes a Bruno collection with sample requests.
 
 **Environment variables:**
 ```
@@ -370,12 +359,12 @@ kubectl describe pod -n acme <pod-name>
 
 Common causes:
 - Missing `medium-priority` PriorityClass → create it (see above)
-- Missing log directory `C:\Zimmermann\volumes\hka-v1` → create it
+- Missing log directory on host → create it
 - Image not built → run `mvn spring-boot:build-image`
 
 ### Pod restarts with `Startup probe failed`
 
-Spring Boot needs ~60-90 seconds to fully start in the container. The `startupProbe.failureThreshold` is set to 30 (allowing 5 minutes) to accommodate slower machines.
+Spring Boot needs ~60-90 seconds to fully start in the container. The `startupProbe.failureThreshold` is configured generously to accommodate slower machines.
 
 ### Port 8443 already in use
 
@@ -414,11 +403,4 @@ All implemented as `@ParameterizedTest` methods organized in `@Nested` classes w
 
 GPL v3 — see `LICENSE` file.
 
-Copyright the project template and configurations are © Jürgen Zimmermann, Hochschule Karlsruhe.
-
----
-
-## Author
-
-**Elie** ([@emengi](https://github.com/emengi))
-Wirtschaftsinformatik · Hochschule Karlsruhe · Group 33
+The project template and configurations are © Jürgen Zimmermann, Hochschule Karlsruhe.
